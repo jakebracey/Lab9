@@ -12,17 +12,44 @@ using namespace std;
 // Main function. Shows a few examples. Complete the assignments stated in the comments.
 int main()
 {
-	string s1, s2("Hello"), s3 = "World";
+	string s1;
 	cout << "\nEnter a word:" << endl;
 	cin >> s1;
 	
+	string s2("Hey Guys!!");
+	string s3 = "Whats up???";
 	string s4(s1);
+	string s5=s2;
+	string s6(5,'a');
+	
 	
 	cout << s1 << endl
 		 << s2 << endl
 		 << s3 << endl
-		 << s4 << endl;
-	
+		 << s4 << endl
+		 << s5 << endl
+		 << s6 << endl<<endl;
+		 
+		string os;
+		//os<<s1; //mention this in report
+		//is>>s1; //mention this in report
+		//getline(is,os);//mention this in report
+		cout<<"Is the string os empty? "<<os.empty()<<endl<<"How long is string s1? "<<s1.size()<<endl;
+		 
+		cout<<"First character of string s2: "<<s2[0]<<endl;
+		cout<<s1+s2<<endl;
+		
+		cout<<"Is s5 the same as s2? "<<(s5==s2)<<endl;
+		cout<<"Is s5 NOT the same as s2? "<<(s5!=s2)<<endl;
+		cout<<"Is s5 > s4? "<<(s5>s4)<<endl;
+		cout<<"Is s5 >= s4? "<<(s5>=s4)<<endl;
+		cout<<"Is s5 < s4? "<<(s5<s4)<<endl;
+		cout<<"Is s5 <= s4? "<<(s5<=s4)<<endl;
+		
+
+		
+		
+		
 	s1 = s2 + s3;
 	cout << s1 << endl;
 
