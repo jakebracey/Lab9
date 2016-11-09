@@ -65,6 +65,23 @@ int main()
 	cout << "\nEnter some text, finish it with an &" << endl;
 	getline(cin, line, '&');
 	cout << line << endl;
+	
+	//converting the string to uppercase
+	for (auto &c : line)
+		c= toupper(c);
+	cout<<line<<endl;
+	
+	//converting the string to lowercase
+	for (auto &c : line)
+		c= tolower(c);
+	cout<<line<<endl;
+	
+	//converting any spaces to '.'
+	for (auto &c : line){
+		if(isspace(c))
+			c='.';	
+	}
+	cout<<line<<endl;
 
 // ***********************************************************************
 // Use a "Range for" (Lippman, page 93) and operations in table 3.3 to:
