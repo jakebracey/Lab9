@@ -47,6 +47,7 @@ class Signal{
 			void Save_file(const char*);
 			void operator+(double);
 			void operator*(double);
+			int get_length();
 };
 
 Signal::~Signal(){
@@ -68,7 +69,6 @@ Signal& Signal::builder(){
 }
 
 Signal& Signal::builder(int file_sel){
-	printf("test\n");
 	char file_name[66];
 	int length;
 	if ( file_sel< 10)//makes the file names
@@ -228,6 +228,28 @@ void Signal::Save_file(const char* file_name){
 	fclose(fp); //closes file
 }
 
+int Signal::get_length(){
+	
+	return data.size();
+	
+}
+
+//non-member function operator that takes 2 signals and returns a new signal
+Signal operator+(Signal s1, Signal s2){
+	
+	Signal temp;
+	
+	if(s1.get_length()!=s2.get_length()){
+		cout<<"The Signals are not of the same length, they cannot be added\n";
+		return temp;
+	}
+	
+	for(i=0; i<s1.get_length(); i++){ //multiplies the scaling factor to all data values
+		data[i]+=num;
+	}
+	
+}
+
 
 int main(int argc, char *argv[]) {
 	
@@ -243,6 +265,7 @@ int main(int argc, char *argv[]) {
 	
 	//defines the signal for us to use
 	Signal sig1;
+	Signal sig2;
 	
 	double offset_val,scale_val;//vlaues to store scale and offsets	
 	
@@ -361,6 +384,29 @@ int main(int argc, char *argv[]) {
 		}//end of switch statement		
 		
 	}//end of while
+	
+	//lets the user decide if they want to enter a filename or file number or do the default which is to open data file 1
+		cout<<endl<<"Would you like to\n(1) Enter a filename\n(2) Enter a file number\n(3) Select the default case"<<endl;
+		cin>>choice_input_type;
+		
+		//if user wants to enter a full filename
+		if(choice_input_type==1){
+			cout<<endl<<"Please enter a valid filename\n";
+			cin>>file_name;
+			sig2.builder(file_name);
+		}
+		
+		//if user wants to enter a file number
+		else if(choice_input_type==2){
+			cout<<endl<<"Please enter a valid file number\n";
+			cin>>file_sel;
+			sig2.builder(file_sel);
+		}
+		
+		Signal sig3;
+		
+		sig3 = operator+(sig1,sig2);
+		
 
 return 0;
 
