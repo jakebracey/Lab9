@@ -48,6 +48,12 @@ class Signal{
 			void operator+(double);
 			void operator*(double);
 			int get_length();
+			vector<double> get_a_copy();
+			void update_data(vector<double>);
+			void update_max(double);
+			void update_mean(double);
+			double get_max();
+			double get_mean();
 };
 
 Signal::~Signal(){
@@ -134,11 +140,13 @@ Signal& Signal::builder(const char* file_name){
 Signal::Signal(int file_sel){
 	//this constructor calls the method that gets all data when given a file number
 	builder(file_sel);
+	stats();
 }
 
 Signal::Signal(const char* file_name){
 	//this constructor calls the method that gets all data when given a filename
 	builder(file_name);
+	stats();
 }
 
 void Signal::operator +(double num){
@@ -198,7 +206,6 @@ void Signal::normal(){
 }
 
 void Signal::Sig_info(){
-	stats();
 	cout << "Length: " << data.size() << endl << "Max: " << max << endl << "Average: " << mean << endl<<endl; //prints out signal info
 }
 
@@ -234,19 +241,67 @@ int Signal::get_length(){
 	
 }
 
+vector<double> Signal::get_a_copy(){
+	vector<double> temp_vec;
+	temp_vec=data;
+	return temp_vec;
+}
+
+void Signal::update_data(vector<double> temp){
+	data=temp;
+	
+}
+
+double Signal::get_max(){
+	return max;
+}
+
+double Signal::get_mean(){
+	return mean;
+}
+
+void Signal::update_mean(double temp){
+	mean=temp;
+}
+
+void Signal::update_max(double temp){
+	max=temp;
+}
+
 //non-member function operator that takes 2 signals and returns a new signal
 Signal operator+(Signal s1, Signal s2){
 	
 	Signal temp;
+	vector<double> vec1;
+	vector<double> vec2;
+	vector<double> vectemp;
+	
 	
 	if(s1.get_length()!=s2.get_length()){
 		cout<<"The Signals are not of the same length, they cannot be added\n";
 		return temp;
 	}
+	vec1=s1.get_a_copy();
+	vec2=s2.get_a_copy();
+	
+	int i;
+	//double te;
 	
 	for(i=0; i<s1.get_length(); i++){ //multiplies the scaling factor to all data values
-		data[i]+=num;
+		//te=(vec1[i])+(vec2[i]);
+		vectemp.push_back((vec1[i])+(vec2[i]));
 	}
+	
+	temp.update_data(vectemp);
+	temp.stats();
+	cout<<s1.get_mean()<<" "<<s2.get_mean()<<" "<<s1.get_max()<<" "<<s2.get_max();
+	temp.update_mean(((s1.get_mean())+(s2.get_mean()))/2);
+	if (s1.get_max()>s2.get_max())
+		temp.update_max(s1.get_max());
+	else
+		temp.update_max(s2.get_max());
+	
+	return temp;
 	
 }
 
@@ -406,6 +461,9 @@ int main(int argc, char *argv[]) {
 		Signal sig3;
 		
 		sig3 = operator+(sig1,sig2);
+		
+		sig3.Print_signal();
+		sig3.Sig_info();
 		
 
 return 0;
