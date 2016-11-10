@@ -103,6 +103,7 @@ Signal& Signal::builder(int file_sel){
 	data=temp;
 	fclose(fp);
 	}
+	stats();
 	return *this;
 }
 
@@ -134,6 +135,7 @@ Signal& Signal::builder(const char* file_name){
 		data=temp;
 		fclose(fp);
 		}
+		stats();
 		return *this;
 }
 
