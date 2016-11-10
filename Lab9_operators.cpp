@@ -72,17 +72,21 @@ int main()
 	
 	if(obj1 > obj2)	// normal expression. Which operator is being called?
 		cout << "\nObject 1 is bigger than object 2" << endl;
+		//the member operator '>' found in line 9 is being called in this part
 	else
 		cout << "\nObject 1 is not bigger than object 2" << endl;
 	
+	 
 	 if(obj1.operator>(obj2))	// equivalent function call (eq. to obj1 > obj2)
 		cout << "\nObject 1 is bigger than object 2" << endl;
+		//the member operator '>' found in line 9 is being called in this part
 	else
 		cout << "\nObject 1 is not bigger than object 2" << endl;
 	
 	
 	if(obj2 > obj1)	// Which operator is being called?
 		cout << "\nObject 2 is bigger than object 1" << endl;
+		//the member operator '>' found in line 9 is being called in this part
 	else
 		cout << "\nObject 2 is not bigger than object 1" << endl;
 	
@@ -96,29 +100,53 @@ int main()
 	obj2.Printvals();
 	
 	obj1 + obj2;	// normal expression. Which operator is being called?
-	// obj1.operator+(obj2);	// equivalent, try it out
+	//the member operator '+' found in line 37 is being called in this part
+	
+	//obj1.operator+(obj2);	// equivalent, try it out
+	//tried this and worked the same
+	
 	obj1.Printvals();
 	obj2.Printvals();
 	
 	obj2 + obj1;	// normal expression. Which operator is being called?
+	//the member operator '+' found in line 37 is being called in this part
+
 	// obj2.operator+(obj1);	// equivalent, try it out
+	//tried this and worked the same
+
+	
 	obj1.Printvals();
 	obj2.Printvals();
 
 	cout << "------------------------------------------------------------------" << endl;
 	obj1*2;		// Would 2*obj1 work? Give it a try.
+	//2*obj1;//this would not work, in fact, it didn't even compile
+	
+	
 	obj2*f;		// Would f*obj2 work? Give it a try.
+	//f*obj2;//this would not work, in fact, it didn't even compile
 	obj1.Printvals();
 	obj2.Printvals();
 	
 	cout << "------------------------------------------------------------------" << endl;
 	// Which operator is being called next?
+	//the non-member operator '+' found in line 55 is being called next
+
 	obj3 = operator+(obj1, obj2);	// Would  obj3 = obj2 + obj1; work?
+	//obj3 = obj2 + obj1;//this does not work and creates a compile error
+	
+	//however the following two lines does work.
+	//obj3 = obj2;
+	//obj3 + obj1;
+	
+	//you could make obj3 = obj2 + obj1; work if you created a member operator of type '='
+	
 	obj1.Printvals();				// If not, how could you make it work?
 	obj2.Printvals();
 	obj3.Printvals();
 	
 	obj3 = operator+(obj2, obj1);	// is this the same as before?
+	//this is the same as before becuase it doesn't matter what order you add the numbers, the end result is the same
 	obj1.Printvals();
 	obj2.Printvals();
 	obj3.Printvals();
