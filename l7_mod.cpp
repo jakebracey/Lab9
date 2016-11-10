@@ -168,13 +168,15 @@ void Signal::operator *(double num){
 void Signal::offset(double num){
 	//this method offsets the given input string
 	int i=0;
-	operator+(num);
+	//operator+(num);
+	*this+num;
 	stats(); //Updates stats after operation
 }
 
 void Signal::scale(double num){
 	int i=0;
-	operator*(num);
+	//operator*(num);
+	*this*num;
 	stats(); //updates stats after operation
 }
 
@@ -296,7 +298,6 @@ Signal operator+(Signal s1, Signal s2){
 	
 	temp.update_data(vectemp);
 	temp.stats();
-	cout<<s1.get_mean()<<" "<<s2.get_mean()<<" "<<s1.get_max()<<" "<<s2.get_max();
 	temp.update_mean(((s1.get_mean())+(s2.get_mean()))/2);
 	if (s1.get_max()>s2.get_max())
 		temp.update_max(s1.get_max());
