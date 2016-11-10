@@ -18,13 +18,13 @@
 
 using namespace std;
 
-
 //result is used to determine if files and memory allocation behaved correctly
 int result=0;
 
 class Signal{
 	private:
-			double max;
+			int length;
+			int max;
 			vector<double> data;
 			double mean;
 			
@@ -33,10 +33,10 @@ class Signal{
 			Signal();
 			Signal(int);
 			Signal(const char*);
-			~Signal();
 			Signal& builder();
 			Signal& builder(int file_sel);
 			Signal& builder(const char* file_name);
+			~Signal();
 			void offset(double num);
 			void scale(double num);
 			void center();
@@ -45,37 +45,46 @@ class Signal{
 			void Sig_info();
 			void Print_signal();
 			void Save_file(const char*);
-			void operator+(double);
-			void operator*(double);
 };
 
-Signal::~Signal(){
-	cout << "Signal Destructed" << endl;
-}
-
-Signal::Signal(){
-	//default constructor
-	data={0};
-	max=0;
-	mean=0;
-}
-
 Signal& Signal::builder(){
-	//default constructor
-	data={0};
-	max=0;
-	mean=0;
+	//default case which opens file 1
+	FILE* fp = fopen("Raw_data_01.txt", "r");
+	//opens a default input file for reading
+	int dum;
+	if (fp == NULL) { //making sure the default input file opens correctly
+		cout<<"Error opening the default input file Raw_data_01.txt"<<endl;
+		result=0;
+	}
+	
+	else{
+	fscanf(fp, "%d %d", &length, &max);
+	result=1;
+
+	data = new double[length];
+	//mallocs space for the array
+
+	int i = 0;
+	for (i = 0; i < length; i++) {
+		//for loop to put the values into the array
+		fscanf(fp, "%d", (&dum));
+		data[i]=(double)dum;
+	}
+	fclose(fp);
+	}
+	stats();
+	return *this;
 }
 
 Signal& Signal::builder(int file_sel){
-	printf("test\n");
+	//method to be used if a file number is given
 	char file_name[66];
-	int length;
+	int dum;//used to temporarily hold the number in the input file
 	if ( file_sel< 10)//makes the file names
 		sprintf(file_name, "Raw_data_0%d.txt", file_sel);
-	else
+		else
 		sprintf(file_name, "Raw_data_%d.txt", file_sel);
-
+	
 	FILE* fp = fopen(file_name, "r");
 	//opens the given input file for reading
 
@@ -83,52 +92,73 @@ Signal& Signal::builder(int file_sel){
 		cout<<"Error opening the default input file "<<file_name<<endl;
 		result=0;
 	}
+
 	else{
 	result=1;
+	fscanf(fp, "%d %d", &length, &max);
 
-	fscanf(fp, "%d %lf", &length, &max);
-	vector<double> temp(length);
+	data = new double[length];
+	//mallocs space for the array
 
 	int i = 0;
 	for (i = 0; i < length; i++) {
 		//for loop to put the values into the array
-		fscanf(fp, "%lf", (&temp[i]));
+		fscanf(fp, "%d", (&dum));
+		data[i]=(double)dum;
 	}
-	data=temp;
 	fclose(fp);
 	}
+	stats();
 	return *this;
 }
 
 Signal& Signal::builder(const char* file_name){
-		//method if a filename is given by the user
-		FILE* fp = fopen(file_name, "r");
-		int length;
-		//opens the given input file for reading
-		if (fp == NULL) { //making sure the default input file opens correctly
-			cout<<"Error opening the default input file "<<file_name<<endl;
+	//method if a filename is given by the user
+	FILE* fp = fopen(file_name, "r");
+	int dum;//used to temporarily hold the number in the input file
+	
+	//opens the given input file for reading
+	if (fp == NULL) { //making sure the default input file opens correctly
+		cout<<"Error opening the default input file "<<file_name<<endl;
+		
+		//sets result to 0 that way main will know that this was unsuccessful
+		result=0;
+		
+	}
+	else{
+	//this happens if file opening was successful
+	
+	//sets result to 1 that way main will know that this was successful
+	result=1;
+	fscanf(fp, "%d %d", &length, &max);
 
-			//sets result to 0 that way main will know that this was unsuccessful
-			result=0;
+	data = new double[length];
+	//mallocs space for the array
 
-		}
-		else{
-		//this happens if file opening was successful
+	int i = 0;
+	for (i = 0; i < length; i++) {
+		//for loop to put the values into the array
+		fscanf(fp, "%d", (&dum));
+		data[i]=(double)dum;
+	}
+	fclose(fp);
+	}
+	stats();
+	return *this;
+}
 
-		//sets result to 1 that way main will know that this was successful
-		result=1;
-		fscanf(fp, "%d %lf", &length, &max);
-		vector<double> temp(length);
+Signal::~Signal(){
+	//destructor that frees the data that we allocated
+	delete[] data;
+	cout << "Signal Destructed" << endl;
+}
 
-		int i = 0;
-		for (i = 0; i < length; i++) {
-			//for loop to put the values into the array
-			fscanf(fp, "%lf", (&temp[i]));
-		}
-		data=temp;
-		fclose(fp);
-		}
-		return *this;
+Signal::Signal(){
+	//default constructor
+	length=0;
+	max=0;
+	data=NULL;
+	mean=0;
 }
 
 Signal::Signal(int file_sel){
@@ -141,30 +171,20 @@ Signal::Signal(const char* file_name){
 	builder(file_name);
 }
 
-void Signal::operator +(double num){
-	int i=0;
-	for(i=0; i<data.size(); i++){ //multiplies the scaling factor to all data values
-		data[i]+=num;
-	}
-}
-
-void Signal::operator *(double num){
-	int i=0;
-	for(i=0; i<data.size(); i++){ //multiplies the scaling factor to all data values
-		data[i]=data[i]*num;
-	}
-}
-
 void Signal::offset(double num){
 	//this method offsets the given input string
 	int i=0;
-	operator+(num);
+	for(i=0; i<length; i++){ //adds the offset value to all data values
+		*(data+i)+=num;
+	}
 	stats(); //Updates stats after operation
 }
 
 void Signal::scale(double num){
 	int i=0;
-	operator*(num);
+	for(i=0; i<length; i++){ //multiplies the scaling factor to all data values
+		*(data+i)=*(data+i)*num;
+	}
 	stats(); //updates stats after operation
 }
 
@@ -172,41 +192,43 @@ void Signal::stats(){ //updates mean and max
 	int i=0;
 	double add=0;
 	max=0;
-	for (i = 0; i<data.size(); i++){
-		if (data[i] > max)
-		max = data[i];
+	for (i = 0; i<length; i++){
+		if (*(data+i) > max)
+		max = *(data+i);
 	}
 	
-	for (i = 0; i < data.size(); i++){
-		add += data[i];
+	for (i = 0; i < length; i++){
+		add += *(data+i);
 	}
-	mean = (double)add/data.size();
+	mean = (double)add/length;
 }
 
 void Signal::center(){
-	double temp=-1*mean;
-	operator+(temp);
+	int i=0;
+	for(i=0; i<length; i++){ //subtracts mean from all data values
+		*(data+i)=*(data+i)-mean;
+	}
 	stats(); //Updates stats after operation
 }
 
 void Signal::normal(){
-	double temp;
-	temp=(double)(1/max);
-	printf("%lf", max);
-	operator*(temp);
+	int i=0;
+	for(i=0; i<length; i++){ //devides by max for all data values
+		*(data+i)=*(data+i)/max;
+	}
 	stats(); //updates stats after operation
 }
 
 void Signal::Sig_info(){
 	stats();
-	cout << "Length: " << data.size() << endl << "Max: " << max << endl << "Average: " << mean << endl<<endl; //prints out signal info
+	cout << "Length: " << length << endl << "Max: " << max << endl << "Average: " << mean << endl<<endl; //prints out signal info
 }
 
 void Signal::Print_signal(){
 	int i;
-	for(i = 0; i<data.size(); i++) //prints new array values to file
+	for(i = 0; i<length; i++) //prints new array values to file
 	{
-		cout<<data[i]<<endl;
+		cout<<*(data+i)<<endl;
 	}
 }
 
@@ -220,10 +242,10 @@ void Signal::Save_file(const char* file_name){
 		freopen(file_name, "w", fp);
 	}
 
-	fprintf(fp, "%d %lf", data.size(), max);
-	for(i = 0; i<data.size(); i++) //prints new array values to file
+	fprintf(fp, "%d %d", length, max);
+	for(i = 0; i<length; i++) //prints new array values to file
 	{
-		fprintf(fp, "%.4f\n", data[i]);
+		fprintf(fp, "%.4f\n", *(data+i));
 	}
 	fclose(fp); //closes file
 }
@@ -299,6 +321,7 @@ int main(int argc, char *argv[]) {
 		//if the user enters an incorrect number of command line arguments then an error message is displayed an the program is terminated
 		cout<<endl<<"You entered an incorrect number of command line arguments\nYou may either have no command line arguements or you may have 1 tag ('-f'or '-n') followed by the filename or file number, respectively\n";
 	}
+		
 		
 	if(result==0){
 		//if no files are read then result will equal 0
